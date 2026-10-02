@@ -98,3 +98,51 @@ def check_transaction(to: str, data: str, value: int, scams: set, chain=None) ->
     if value:
         findings.append(Finding(INFO, f"Also sends {value / 1e18:g} ETH."))
     return findings
+
+
+# Functions whose approvals the decoder already explains, so the simulation shouldn't repeat them.
+_DECODED_APPROVALS = {"approve", "increaseAllowance", "setApprovalForAll", "permit"}
+
+
+def simulation_findings(sim, token_info, data: str = "0x") -> list:
+    """Explain a Simulation (see simulate.py). `token_info(addr)` returns (symbol, decimals)."""
+    from .simulate import format_amount, short
+
+    if not sim.success:
+        return [Finding(WARNING, f"Simulation says this transaction would FAIL ({sim.error}). You'd pay gas for nothing.")]
+
+    decoded = decode_calldata(data)
+    fn = decoded["function"] if decoded else None
+    is_plain_send = decoded is None or fn in ("transfer", "transferFrom")
+    findings = []
+
+    lost = {t: d for t, d in sim.changes.items() if d < 0}
+    gained = {t: d for t, d in sim.changes.items() if d > 0}
+    for token, delta in lost.items():
+        symbol, decimals = token_info(token)
+        findings.append(Finding(INFO, f"Simulated result: you LOSE {format_amount(delta, decimals)} {symbol}."))
+    for token, delta in gained.items():
+        symbol, decimals = token_info(token)
+        findings.append(Finding(OK, f"Simulated result: you RECEIVE {format_amount(delta, decimals)} {symbol}."))
+    for collection, token_id in sim.nfts_out:
+        findings.append(Finding(INFO, f"Simulated result: NFT #{token_id} from {short(collection)} LEAVES your wallet."))
+    for collection, token_id in sim.nfts_in:
+        findings.append(Finding(OK, f"Simulated result: you RECEIVE NFT #{token_id} from {short(collection)}."))
+
+    if (lost or sim.nfts_out) and not (gained or sim.nfts_in) and not is_plain_send:
+        findings.append(Finding(WARNING, "You give up assets and get NOTHING back. Fake 'claim' and 'mint' sites work exactly like this."))
+
+    if fn not in _DECODED_APPROVALS:
+        # Approvals hidden inside some other function (multicall, fake 'claim', etc.)
+        for token, spender, amount in sim.approvals:
+            symbol, decimals = token_info(token)
+            if is_unlimited(amount):
+                findings.append(Finding(DANGER, f"HIDDEN unlimited approval: {spender} could take ALL your {symbol}."))
+            else:
+                findings.append(Finding(WARNING, f"Hidden approval: {spender} may spend {format_amount(amount, decimals)} {symbol}."))
+        for collection, operator in sim.approvals_for_all:
+            findings.append(Finding(DANGER, f"HIDDEN 'approve all': {operator} gets every NFT in {short(collection)}."))
+
+    if not findings:
+        findings.append(Finding(OK, "Simulated result: nothing leaves your wallet."))
+    return findings

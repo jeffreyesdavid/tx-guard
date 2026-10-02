@@ -3,7 +3,8 @@
 import argparse
 import sys
 
-from .checks import DANGER, INFO, OK, WARNING, check_address, check_transaction, verdict
+from .checks import DANGER, INFO, OK, WARNING, Finding, check_address, check_transaction, simulation_findings, verdict
+from .simulate import RPC, RPCError, simulate
 from .sources import CHAINS, Etherscan, load_scam_list
 
 ICONS = {DANGER: "🚨", WARNING: "⚠️ ", INFO: "ℹ️ ", OK: "✅"}
@@ -25,6 +26,17 @@ def print_report(findings):
     return level
 
 
+def run_simulation(args):
+    rpc = RPC(chain=args.chain)
+    try:
+        sim = simulate(rpc, args.sender, args.to, args.data, args.value)
+    except RPCError as e:
+        return [Finding(WARNING, f"Simulation unavailable: {e}. Try another node with RPC_URL (e.g. a free Alchemy URL).")]
+    except Exception as e:
+        return [Finding(WARNING, f"Simulation unavailable (couldn't reach {rpc.url}): {e}")]
+    return simulation_findings(sim, rpc.token_info, args.data)
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(prog="txguard", description="Check a crypto address or transaction before you sign.")
     p.add_argument("--chain", choices=CHAINS, default="mainnet")
@@ -38,6 +50,7 @@ def main(argv=None):
     t.add_argument("--to", required=True)
     t.add_argument("--data", default="0x")
     t.add_argument("--value", type=int, default=0, help="ETH value in wei")
+    t.add_argument("--from", dest="sender", help="Your wallet address; turns on simulation of what you'd gain/lose")
 
     h = sub.add_parser("hash", help="Check an existing transaction by its hash")
     h.add_argument("tx_hash")
@@ -61,6 +74,9 @@ def main(argv=None):
             findings = check_address(args.address, scams, chain)
         elif args.cmd == "tx":
             findings = check_transaction(args.to, args.data, args.value, scams, chain)
+            if args.sender and not args.offline:
+                check_address(args.sender, set())  # validates the format
+                findings += run_simulation(args)
         else:
             tx = chain.get_transaction(args.tx_hash)
             findings = check_transaction(tx["to"], tx["data"], tx["value"], scams, chain)

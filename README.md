@@ -28,9 +28,32 @@ $ python -m txguard tx --to 0xA0b8...eB48 --data 0x095ea7b3...ffff
 
 Every address inside the transaction (destination, spender, recipient) gets checked, not just the one you're sending to.
 
+## Transaction simulation
+
+Add `--from <your wallet>` and tx-guard dry-runs the transaction against the live chain (via the standard `eth_simulateV1` RPC method) **before** you sign, then shows exactly what would happen:
+
+```
+  ℹ️  INFO     Simulated result: you LOSE 500 USDC.
+  ⚠️  WARNING  You give up assets and get NOTHING back. Fake 'claim' and 'mint' sites work exactly like this.
+  🚨 DANGER   HIDDEN unlimited approval: 0xbbbb… could take ALL your USDC.
+```
+
+| Simulation check | Why it matters |
+|---|---|
+| Real token amounts in, out | "You lose 500 USDC" instead of raw calldata |
+| Assets out, nothing back | The signature move of fake airdrop, claim and mint sites |
+| Hidden approvals | Catches approvals buried inside multicalls or unknown functions that decoding alone can't see |
+| Would-fail detection | Warns before you pay gas for a transaction that will revert |
+
+Simulation uses a free public node by default. If it doesn't support `eth_simulateV1`, point it at another one:
+
+```bash
+export RPC_URL=https://eth-mainnet.g.alchemy.com/v2/YOUR_KEY
+```
+
 ## Install
 
-Requires Python 3.10+. No third-party packages.
+Requires Python 3.9+. No third-party packages.
 
 ```bash
 git clone https://github.com/<your-username>/tx-guard.git
@@ -54,6 +77,9 @@ python -m txguard address 0x101ce0cedd142f199c9ef61739ae59b6611a0fc0
 # Check a transaction before signing (copy "to" and "data" from your wallet's details view)
 python -m txguard tx --to 0xTOKEN --data 0x095ea7b3...
 
+# Same, plus simulate what you'd gain or lose
+python -m txguard tx --from 0xYOUR_WALLET --to 0xTOKEN --data 0x095ea7b3...
+
 # Check an existing transaction by hash
 python -m txguard hash 0xTX_HASH
 
@@ -72,7 +98,7 @@ Exit codes: `0` = OK, `1` = warning, `2` = danger, so it can be used in scripts.
 python -m unittest discover -s tests -t .
 ```
 
-20 tests, fully offline (Etherscan is replaced with a fake).
+35 tests, fully offline (Etherscan and the blockchain node are replaced with fakes).
 
 ## Project layout
 
@@ -80,6 +106,7 @@ python -m unittest discover -s tests -t .
 txguard/
   decoder.py   # turns raw calldata into function + arguments
   checks.py    # the safety rules (pure logic, easy to test)
+  simulate.py  # dry-runs a transaction on the live chain
   sources.py   # scam list + Etherscan API
   cli.py       # command line interface
 tests/
@@ -89,8 +116,8 @@ tests/
 ## Roadmap
 
 - [x] Scam list, approval detection, contract and age checks
-- [ ] Transaction simulation (show exact balance changes before signing) using a local Foundry fork
-- [ ] Convert token amounts to human units (e.g. "500 USDC" instead of raw units)
+- [x] Transaction simulation: exact balance changes, hidden approvals, would-fail detection
+- [x] Human-readable token amounts (e.g. "500 USDC" instead of raw units)
 - [ ] Browser extension that runs the checks automatically before your wallet signs
 - [ ] "Undo window" vault: a smart contract that delays large transfers so you can cancel fraud
 

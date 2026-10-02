@@ -1,5 +1,7 @@
 """Outside data: the ScamSniffer blocklist and the Etherscan API (v2)."""
 
+from __future__ import annotations
+
 import json
 import os
 import time
