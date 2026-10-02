@@ -39,6 +39,10 @@ def decode_calldata(data: str):
     data = data.lower()
     if not data.startswith("0x"):
         data = "0x" + data
+    body_hex = data[2:]
+    if any(c not in "0123456789abcdef" for c in body_hex) or len(body_hex) % 2:
+        raise ValueError("Calldata isn't valid hex (it must have an even number of 0-9/a-f characters). "
+                         "Check for a missing or extra character when copying it.")
     selector, body = data[:10], data[10:]
     if selector not in SELECTORS:
         return {"function": None, "selector": selector, "args": []}

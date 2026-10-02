@@ -47,6 +47,14 @@ class TestDecoder(unittest.TestCase):
     def test_unknown_selector(self):
         self.assertIsNone(decode_calldata("0xdeadbeef")["function"])
 
+    def test_odd_length_rejected(self):
+        with self.assertRaises(ValueError):
+            decode_calldata("0xa9059cbb0")
+
+    def test_non_hex_rejected(self):
+        with self.assertRaises(ValueError):
+            decode_calldata("0xa9059cbz")
+
     def test_truncated(self):
         with self.assertRaises(ValueError):
             decode_calldata("0x095ea7b3" + "00" * 10)
