@@ -2,6 +2,8 @@
 
 **Check a crypto transaction before you sign it.**
 
+![tx-guard catching three common crypto scams](docs/demo.svg)
+
 Most crypto theft doesn't come from "hacking the blockchain." It comes from people signing a transaction they don't understand: an unlimited token approval, an NFT "approve all," or a payment to a known scam address. Once signed, it can't be undone.
 
 `tx-guard` reads a transaction or address and tells you in plain English what it will do and whether it's dangerous.
@@ -56,7 +58,7 @@ export RPC_URL=https://eth-mainnet.g.alchemy.com/v2/YOUR_KEY
 Requires Python 3.9+. No third-party packages.
 
 ```bash
-git clone https://github.com/<your-username>/tx-guard.git
+git clone https://github.com/jeffreyesdavid/tx-guard.git
 cd tx-guard
 ```
 
@@ -67,6 +69,17 @@ export ETHERSCAN_API_KEY=your_key_here
 ```
 
 Without a key, it still runs the scam-list and transaction-decoding checks.
+
+## Web demo
+
+Prefer a browser? There's a simple web version in `app.py`:
+
+```bash
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+Pick an example (or paste your own transaction) and click **Check**.
 
 ## Usage
 

@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="260" viewBox="0 0 880 260" role="img" aria-label="tx-guard demo: three risky transactions flagged as DANGER">
+<style>
+text{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;fill:#e6edf3}
+.cm{fill:#8b949e} .cmd{fill:#e6edf3} .vd{font-weight:700}
+@keyframes s0{0%{opacity:0}0%{opacity:1}0.005%{opacity:1}31.905%{opacity:1}33.333%{opacity:0}100%{opacity:0}}
+.s0{opacity:0;animation:s0 21s infinite}
+@keyframes t0{0%{width:0}2.857%{width:0}10.476%{width:533px}100%{width:533px}}
+#c0 rect{width:0;animation:t0 21s infinite steps(651)}
+@keyframes o0{0%{opacity:0}12.857%{opacity:0}13.095%{opacity:1}100%{opacity:1}}
+@keyframes v0{0%{opacity:0}15.238%{opacity:0}15.476%{opacity:1}100%{opacity:1}}
+.o0{opacity:0;animation:o0 21s infinite}.v0{opacity:0;animation:v0 21s infinite}
+@keyframes s1{0%{opacity:0}33.329%{opacity:0}33.338%{opacity:1}65.238%{opacity:1}66.667%{opacity:0}100%{opacity:0}}
+.s1{opacity:0;animation:s1 21s infinite}
+@keyframes t1{0%{width:0}36.190%{width:0}43.810%{width:600px}100%{width:600px}}
+#c1 rect{width:0;animation:t1 21s infinite steps(735)}
+@keyframes o1{0%{opacity:0}46.190%{opacity:0}46.429%{opacity:1}100%{opacity:1}}
+@keyframes v1{0%{opacity:0}48.571%{opacity:0}48.810%{opacity:1}100%{opacity:1}}
+.o1{opacity:0;animation:o1 21s infinite}.v1{opacity:0;animation:v1 21s infinite}
+@keyframes s2{0%{opacity:0}66.662%{opacity:0}66.671%{opacity:1}98.571%{opacity:1}100.000%{opacity:0}100%{opacity:0}}
+.s2{opacity:0;animation:s2 21s infinite}
+@keyframes t2{0%{width:0}69.524%{width:0}77.143%{width:533px}100%{width:533px}}
+#c2 rect{width:0;animation:t2 21s infinite steps(651)}
+@keyframes o2{0%{opacity:0}79.524%{opacity:0}79.762%{opacity:1}100%{opacity:1}}
+@keyframes v2{0%{opacity:0}81.905%{opacity:0}82.143%{opacity:1}100%{opacity:1}}
+.o2{opacity:0;animation:o2 21s infinite}.v2{opacity:0;animation:v2 21s infinite}
+</style>
+<rect width="880" height="260" rx="10" fill="#0d1117" stroke="#30363d"/>
+<circle cx="20" cy="18" r="6" fill="#ff5f57"/><circle cx="40" cy="18" r="6" fill="#febc2e"/><circle cx="60" cy="18" r="6" fill="#28c840"/>
+<text x="440.0" y="23" text-anchor="middle" style="fill:#8b949e;font-size:12px">tx-guard</text>
+<line x1="0" y1="36" x2="880" y2="36" stroke="#21262d"/>
+<g class="s0">
+<clipPath id="c0"><rect x="20" y="76" height="22"/></clipPath>
+<text x="22" y="70" class="cm"># A site asks you to &#x27;approve&#x27; USDC. Should you?</text>
+<text x="22" y="92" class="cmd" clip-path="url(#c0)"><tspan fill="#7ee787">$</tspan> python -m txguard tx --to 0xA0b8…eB48 --data 0x095ea7b3…ffff</text>
+<g class="o0"><text x="38" y="127.2" fill="#ff6b6b" xml:space="preserve">🚨 DANGER   UNLIMITED approval: 0x1111111111111111111111111111111111111111 could take ALL of</text><text x="38" y="149.2" fill="#e6edf3" xml:space="preserve">           this token from your wallet, at any time, forever.</text></g>
+<text x="38" y="184.39999999999998" class="v0 vd" fill="#ff6b6b">Verdict: 🚨 DO NOT SIGN. This looks dangerous.</text>
+</g>
+<g class="s1">
+<clipPath id="c1"><rect x="20" y="76" height="22"/></clipPath>
+<text x="22" y="70" class="cm"># Someone DMs you an address to send funds to.</text>
+<text x="22" y="92" class="cmd" clip-path="url(#c1)"><tspan fill="#7ee787">$</tspan> python -m txguard address 0x101ce0cedd142f199c9ef61739ae59b6611a0fc0</text>
+<g class="o1"><text x="38" y="127.2" fill="#ff6b6b" xml:space="preserve">🚨 DANGER   The address 0x101ce0cedd142f199c9ef61739ae59b6611a0fc0 is on a known scam list.</text><text x="38" y="149.2" fill="#e6edf3" xml:space="preserve">           Do not interact.</text></g>
+<text x="38" y="184.39999999999998" class="v1 vd" fill="#ff6b6b">Verdict: 🚨 DO NOT SIGN. This looks dangerous.</text>
+</g>
+<g class="s2">
+<clipPath id="c2"><rect x="20" y="76" height="22"/></clipPath>
+<text x="22" y="70" class="cm"># A &#x27;free mint&#x27; wants approval for your NFT collection.</text>
+<text x="22" y="92" class="cmd" clip-path="url(#c2)"><tspan fill="#7ee787">$</tspan> python -m txguard tx --to 0xBC4C…f13D --data 0xa22cb465…0001</text>
+<g class="o2"><text x="38" y="127.2" fill="#ff6b6b" xml:space="preserve">🚨 DANGER   Gives 0x3333333333333333333333333333333333333333 control of EVERY NFT you own in</text><text x="38" y="149.2" fill="#e6edf3" xml:space="preserve">           collection 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D.</text></g>
+<text x="38" y="184.39999999999998" class="v2 vd" fill="#ff6b6b">Verdict: 🚨 DO NOT SIGN. This looks dangerous.</text>
+</g>
+</svg>
