@@ -4,6 +4,8 @@
 
 ![tx-guard catching three common crypto scams](docs/demo.svg)
 
+**[▶ Try it live in your browser](https://txguard-jeffrey.streamlit.app)**, no install needed.
+
 Most crypto theft doesn't come from "hacking the blockchain." It comes from people signing a transaction they don't understand: an unlimited token approval, an NFT "approve all," or a payment to a known scam address. Once signed, it can't be undone.
 
 `tx-guard` reads a transaction or address and tells you in plain English what it will do and whether it's dangerous.
